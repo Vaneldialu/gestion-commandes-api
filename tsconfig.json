@@ -1,0 +1,12 @@
+{
+  "extends": "@adonisjs/tsconfig/tsconfig.app.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "jsx": "react",
+    "outDir": "./build",
+    "baseUrl": ".",
+    "paths": {
+      "@ioc:Adonis/Lucid/Database": ["types/ioc.d.ts"]
+    }
+  }
+}
