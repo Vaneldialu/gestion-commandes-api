@@ -8,11 +8,15 @@
     "./data": "./.adonisjs/client/data.d.ts",
     "./registry": "./.adonisjs/client/registry/index.ts"
   },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "ace": "NODE_OPTIONS='--import tsx' node ace",
     "dev": "npm run ace -- serve --hmr",
     "build": "npm run ace -- build",
     "start": "node build/bin/server.js"
+    
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",
@@ -77,4 +81,6 @@
     ]
   },
   "prettier": "@adonisjs/prettier-config"
+
+  
 }
