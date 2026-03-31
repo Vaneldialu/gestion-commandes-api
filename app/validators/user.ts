@@ -1,4 +1,4 @@
-import vine from '@vinejs/vine'
+import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 
 /**
  * Shared rules for email and password.
@@ -24,3 +24,22 @@ export const loginValidator = vine.create({
   email: email(),
   password: vine.string(),
 })
+
+const frenchUserMessages = {
+  required: 'Le champ {{ field }} est obligatoire.',
+  'string': 'Le champ {{ field }} doit être une chaîne de caractères.',
+  'string.email': 'Le champ {{ field }} doit être une adresse e-mail valide.',
+  'string.minLength': 'Le champ {{ field }} doit contenir au moins {{ options.min }} caractères.',
+  'string.maxLength': 'Le champ {{ field }} ne peut dépasser {{ options.max }} caractères.',
+  'string.sameAs': 'Le champ {{ field }} doit être identique au mot de passe.',
+  'database.unique': 'Ce {{ field }} est déjà utilisé par un autre compte.',
+}
+
+const frenchUserFields = {
+  fullName: 'Nom complet',
+  email: 'Adresse e-mail',
+  password: 'Mot de passe',
+  passwordConfirmation: 'Confirmation du mot de passe',
+}
+
+export const userMessagesProvider = new SimpleMessagesProvider(frenchUserMessages, frenchUserFields)
