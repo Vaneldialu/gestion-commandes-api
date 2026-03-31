@@ -21,6 +21,7 @@ yarn-error.log
 .fleet
 .idea
 .vscode
+.codex
 
 # Platform specific
 .DS_Store
