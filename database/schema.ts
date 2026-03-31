@@ -33,7 +33,7 @@ export class AuthAccessTokenSchema extends BaseModel {
 }
 
 export class ClientProduitSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'nomClient', 'nomProduit', 'updatedAt'] as const
+  static $columns = ['createdAt', 'id', 'nomClient', 'nomProduit', 'updatedAt', 'userId'] as const
   $columns = ClientProduitSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -43,12 +43,14 @@ export class ClientProduitSchema extends BaseModel {
   declare nomClient: string | null
   @column()
   declare nomProduit: string | null
+  @column()
+  declare userId: number
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }
 
 export class CommandeSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'montantTotal', 'nomClient', 'numeroFacture', 'statut', 'updatedAt'] as const
+  static $columns = ['createdAt', 'id', 'montantTotal', 'nomClient', 'numeroFacture', 'statut', 'updatedAt', 'userId'] as const
   $columns = CommandeSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -64,6 +66,8 @@ export class CommandeSchema extends BaseModel {
   declare statut: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
 }
 
 export class LignesCommandeSchema extends BaseModel {
