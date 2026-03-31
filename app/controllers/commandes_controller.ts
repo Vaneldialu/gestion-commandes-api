@@ -12,12 +12,17 @@ import {
 } from '#validators/commande'
 
 export default class CommandesController {
-  public async index({ response }: HttpContext) {
-    const commandes = await Commande.query().preload('lignes').orderBy('createdAt', 'desc')
+  public async index({ response, auth }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const commandes = await Commande.query()
+      .where('user_id', user.id)
+      .preload('lignes')
+      .orderBy('createdAt', 'desc')
     return response.ok(commandes)
   }
 
-  public async store({ request, response }: HttpContext) {
+  public async store({ request, response, auth }: HttpContext) {
+    const user = auth.getUserOrFail()
     const payload = await request.validateUsing(storeCommandeValidator, {
       messagesProvider: commandeMessagesProvider,
     })
@@ -33,6 +38,7 @@ export default class CommandesController {
       commande.montantTotal = payload.montant_total
       commande.statut = payload.statut ?? 'en_attente'
       commande.numeroFacture = numeroFacture
+      commande.userId = user.id
       
       // On attache la transaction
       commande.useTransaction(trx)
@@ -58,11 +64,15 @@ export default class CommandesController {
     }
   }
 
-  public async updateStatus({ params, request, response }: HttpContext) {
+  public async updateStatus({ params, request, response, auth }: HttpContext) {
+    const user = auth.getUserOrFail()
     const { statut } = await request.validateUsing(updateStatusValidator, {
       messagesProvider: commandeMessagesProvider,
     })
-    const commande = await Commande.findOrFail(params.id)
+    const commande = await Commande.query()
+      .where('id', params.id)
+      .where('user_id', user.id)
+      .firstOrFail()
 
     commande.statut = statut
     await commande.save()
@@ -71,8 +81,13 @@ export default class CommandesController {
     return response.ok(commande)
   }
 
-  public async shareInvoice({ params, response }: HttpContext) {
-    const commande = await Commande.query().preload('lignes').where('id', params.id).firstOrFail()
+  public async shareInvoice({ params, response, auth }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const commande = await Commande.query()
+      .preload('lignes')
+      .where('id', params.id)
+      .where('user_id', user.id)
+      .firstOrFail()
 
     const baseUrl = process.env.APP_URL ?? 'http://localhost:3333'
     const invoiceUrl = new URL(`/factures/${commande.numeroFacture}`, baseUrl).toString()
