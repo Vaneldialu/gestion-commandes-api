@@ -1,5 +1,7 @@
+import { existsSync } from 'fs'
 import { randomUUID } from 'crypto'
 import { DateTime } from 'luxon'
+import app from '@adonisjs/core/services/app'
 import db from '@adonisjs/lucid/services/db'
 import type { HttpContext } from '@adonisjs/core/http'
 import PDFDocument from 'pdfkit'
@@ -127,6 +129,14 @@ export default class CommandesController {
 
   private async buildInvoicePdf(commande: Commande) {
     const pdf = new PDFDocument({ size: 'A4', margin: 48 })
+    const logoPath = app.publicPath('images/active-travel-logo.png')
+
+    if (existsSync(logoPath)) {
+      pdf.image(logoPath, pdf.page.margins.left, pdf.y, { width: 150 })
+      pdf.moveDown(1.2)
+    } else {
+      pdf.moveDown(0.5)
+    }
     const chunks: Buffer[] = []
     const completion = new Promise<void>((resolve, reject) => {
       pdf.on('data', (chunk: Buffer) => chunks.push(chunk))
@@ -134,13 +144,13 @@ export default class CommandesController {
       pdf.on('error', (error) => reject(error))
     })
 
-    pdf.fontSize(26).text('Willy Business', { align: 'right' })
-    pdf.fontSize(22).text('Facture', { align: 'right' })
+    pdf.fontSize(20).text('Facture', { align: 'right' })
+    pdf.fontSize(14).text('Active travel', { align: 'right',  })
+    pdf.fontSize(14).text('N°RCCM : CD/KNM/RCCM/26-A-00771', { align: 'right' })
+    pdf.fontSize(14).text('ID Nationale : 01-G4701-N94220E', { align: 'right' })
     pdf.moveDown(0.2)
 
     pdf.fontSize(14).text(commande.numeroFacture, { align: 'right' })
-    pdf.fontSize(10).fillColor('#555555').text('Document généré par GestionCommande', { align: 'right' })
-    pdf.fillColor('black')
     pdf.moveDown(1)
 
     const emissionDate =
@@ -239,7 +249,7 @@ export default class CommandesController {
   }
 
   private formatCurrency(value: number) {
-    return `${value.toFixed(2)} €`
+    return `${value.toFixed(2)} $`
   }
 
   private async generateInvoiceNumber(_: any) {
